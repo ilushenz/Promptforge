@@ -1,5 +1,5 @@
 export type ObjectType = 'flat' | 'freestanding';
-export type ObjectSize = 'small' | 'medium' | 'large' | 'monumental';
+export type ObjectSize = 'small' | 'medium' | 'large' | 'monumental' | 'custom';
 export type Placement = 'centre' | 'left' | 'right' | 'background' | 'foreground' | 'wall';
 export type TimeOfDay = 'dawn' | 'morning' | 'midday' | 'golden_hour' | 'dusk' | 'overcast';
 export type Weather = 'clear' | 'partly_cloudy' | 'overcast' | 'after_rain';
@@ -33,6 +33,7 @@ export interface AnnotationState {
 export interface FormParams {
   objectType: ObjectType;
   objectSize: ObjectSize;
+  customSizeText: string;
   placement: Placement;
   timeOfDay: TimeOfDay;
   weather: Weather;

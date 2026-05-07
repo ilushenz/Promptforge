@@ -10,6 +10,7 @@ export const SIZE_MAP: Record<ObjectSize, string> = {
   medium: 'medium — between 50 centimetres and 1.5 metres tall',
   large: 'large — between 1.5 and 3 metres tall',
   monumental: 'monumental — over 3 metres tall, dominating the space',
+  custom: '', // resolved dynamically from customSizeText in promptBuilder
 };
 
 export const PLACEMENT_MAP: Record<Placement, string> = {

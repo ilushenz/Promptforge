@@ -20,7 +20,7 @@ export function buildPrompt(params: FormParams, angleName: string): string {
     '',
     'Object details:',
     `- Type: ${OBJECT_TYPE_MAP[params.objectType]}`,
-    `- Size: ${SIZE_MAP[params.objectSize]}`,
+    `- Size: ${params.objectSize === 'custom' ? params.customSizeText.trim() || 'custom size (not specified)' : SIZE_MAP[params.objectSize]}`,
     `- Placement: ${
       params.annotations.placementLine !== null || params.annotations.strokes.length > 0
         ? 'as indicated by the annotation drawn on the uploaded space image'

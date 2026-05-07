@@ -16,6 +16,7 @@ import type { FormParams } from './types';
 const DEFAULT_PARAMS: FormParams = {
   objectType: 'freestanding',
   objectSize: 'medium',
+  customSizeText: '',
   placement: 'centre',
   timeOfDay: 'golden_hour',
   weather: 'clear',
@@ -130,7 +131,12 @@ export default function App() {
 
           {/* Parameter form */}
           <ObjectTypeSelector value={params.objectType} onChange={(v) => updateParam('objectType', v)} />
-          <ObjectSizeSelector value={params.objectSize} onChange={(v) => updateParam('objectSize', v)} />
+          <ObjectSizeSelector
+            value={params.objectSize}
+            customSizeText={params.customSizeText}
+            onChange={(v) => updateParam('objectSize', v)}
+            onCustomTextChange={(v) => updateParam('customSizeText', v)}
+          />
           {params.annotations.placementLine !== null || params.annotations.strokes.length > 0 ? (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Placement</h3>
