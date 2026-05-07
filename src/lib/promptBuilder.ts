@@ -21,7 +21,11 @@ export function buildPrompt(params: FormParams, angleName: string): string {
     'Object details:',
     `- Type: ${OBJECT_TYPE_MAP[params.objectType]}`,
     `- Size: ${SIZE_MAP[params.objectSize]}`,
-    `- Placement: ${PLACEMENT_MAP[params.placement]}`,
+    `- Placement: ${
+      params.annotations.placementLine !== null || params.annotations.strokes.length > 0
+        ? 'as indicated by the annotation drawn on the uploaded space image'
+        : PLACEMENT_MAP[params.placement]
+    }`,
     '',
     'Lighting and atmosphere:',
     `- ${TIME_OF_DAY_MAP[params.timeOfDay]}`,

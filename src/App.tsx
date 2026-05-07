@@ -131,7 +131,23 @@ export default function App() {
           {/* Parameter form */}
           <ObjectTypeSelector value={params.objectType} onChange={(v) => updateParam('objectType', v)} />
           <ObjectSizeSelector value={params.objectSize} onChange={(v) => updateParam('objectSize', v)} />
-          <PlacementSelector value={params.placement} onChange={(v) => updateParam('placement', v)} />
+          {params.annotations.placementLine !== null || params.annotations.strokes.length > 0 ? (
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Placement</h3>
+              <div className="rounded-lg border border-slate-700 bg-slate-800/30 px-4 py-3 flex items-start gap-2.5">
+                <span className="mt-0.5 text-blue-400 shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                    <path d="M7 0a7 7 0 1 0 0 14A7 7 0 0 0 7 0Zm.75 10.5h-1.5v-4h1.5v4Zm0-5.5h-1.5V3.5h1.5V5Z"/>
+                  </svg>
+                </span>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Placement is defined by your annotation — the prompt will reference the marked region instead of this selector.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <PlacementSelector value={params.placement} onChange={(v) => updateParam('placement', v)} />
+          )}
           <TimeOfDaySelector value={params.timeOfDay} onChange={(v) => updateParam('timeOfDay', v)} />
           <WeatherSelector value={params.weather} onChange={(v) => updateParam('weather', v)} />
           <FreeNoteInput value={params.freeNote} onChange={(v) => updateParam('freeNote', v)} />
