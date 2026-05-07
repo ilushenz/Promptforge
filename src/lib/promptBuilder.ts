@@ -46,21 +46,29 @@ export function buildPrompt(params: FormParams, angleName: string): string {
     lines.push(`- Additional instruction: ${params.freeNote.trim()}`);
   }
 
-  // Append annotation reference sentences when the user has drawn on the space photo.
+  // Append detailed placement instructions when the user has drawn annotations on the space photo.
   const hasLine = params.annotations.placementLine !== null;
   const hasBrush = params.annotations.strokes.length > 0;
 
   if (hasLine || hasBrush) {
-    lines.push('');
+    lines.push('', 'Placement instructions (CRITICAL — follow exactly):');
   }
+
   if (hasLine) {
     lines.push(
-      "Placement reference: a line is marked on the uploaded space image indicating the rear bottom edge where the object's base should sit. Align the object so its back base edge follows this line precisely."
+      '- The FIRST image contains a red straight line drawn directly on the space photograph. This line marks the exact rear bottom edge of the object — the ground-contact line along which the back of the object\'s base must sit.',
+      "- Place the object so that its rear base edge lies precisely along this red line. Do not approximate — the alignment must be exact. The object's base should contact the floor or surface right at this line, as if the line were a physical chalk mark on the ground.",
+      '- Use the angle, position, and length of the line to infer the surface perspective and depth. The object must be foreshortened and scaled consistently with how the surface recedes at the point where the line is drawn.',
+      '- The red line must not be visible in the final output — it is a positioning guide only.',
     );
   }
+
   if (hasBrush) {
     lines.push(
-      'Placement reference: a highlighted region is marked on the uploaded space image indicating the area where the object should be placed. Position the object within this highlighted region.'
+      '- The FIRST image contains a red semi-transparent painted region. This region marks the exact area of the floor or surface where the object must be placed.',
+      '- Position the object so that its base footprint sits fully within the painted region. The object should occupy that zone — do not place it outside, beside, or overlapping the boundary of the marked area.',
+      '- Use the shape, size, and perspective of the painted region to determine the correct scale and orientation of the object relative to the surrounding space.',
+      '- The red overlay must not be visible in the final output — it is a positioning guide only.',
     );
   }
 
