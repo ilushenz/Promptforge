@@ -42,6 +42,24 @@ export function buildPrompt(params: FormParams, angleName: string): string {
     lines.push(`- Additional instruction: ${params.freeNote.trim()}`);
   }
 
+  // Append annotation reference sentences when the user has drawn on the space photo.
+  const hasLine = params.annotations.placementLine !== null;
+  const hasBrush = params.annotations.strokes.length > 0;
+
+  if (hasLine || hasBrush) {
+    lines.push('');
+  }
+  if (hasLine) {
+    lines.push(
+      "Placement reference: a line is marked on the uploaded space image indicating the rear bottom edge where the object's base should sit. Align the object so its back base edge follows this line precisely."
+    );
+  }
+  if (hasBrush) {
+    lines.push(
+      'Placement reference: a highlighted region is marked on the uploaded space image indicating the area where the object should be placed. Position the object within this highlighted region.'
+    );
+  }
+
   return lines.join('\n');
 }
 

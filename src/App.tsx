@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useLocalStorage } from './lib/useLocalStorage';
 import { buildAllPrompts } from './lib/promptBuilder';
 import { ObjectTypeSelector } from './components/ParameterForm/ObjectTypeSelector';
@@ -9,6 +9,8 @@ import { WeatherSelector } from './components/ParameterForm/WeatherSelector';
 import { FreeNoteInput } from './components/ParameterForm/FreeNoteInput';
 import { AngleSelector } from './components/AngleSelector/AngleSelector';
 import { PromptOutput } from './components/PromptOutput/PromptOutput';
+import { PhotoUpload } from './components/ImageAnnotator/PhotoUpload';
+import { ImageAnnotator } from './components/ImageAnnotator/ImageAnnotator';
 import type { FormParams } from './types';
 
 const DEFAULT_PARAMS: FormParams = {
@@ -19,7 +21,17 @@ const DEFAULT_PARAMS: FormParams = {
   weather: 'clear',
   freeNote: '',
   selectedAngles: [],
+  annotations: { strokes: [], placementLine: null },
 };
+
+// The space photo is kept in component state only (not localStorage) because
+// image data URLs can be several megabytes — too large to reliably persist.
+// Annotation coordinates (tiny percentage values) are persisted via FormParams.
+interface SpacePhoto {
+  dataUrl: string;
+  nativeW: number;
+  nativeH: number;
+}
 
 export default function App() {
   const [params, setParams] = useLocalStorage<FormParams>('promptforge-params', DEFAULT_PARAMS);
@@ -27,24 +39,36 @@ export default function App() {
     'promptforge-prompts',
     null
   );
+  const [spacePhoto, setSpacePhoto] = useState<SpacePhoto | null>(null);
   const outputRef = useRef<HTMLDivElement>(null);
 
   function updateParam<K extends keyof FormParams>(key: K, value: FormParams[K]) {
     setParams({ ...params, [key]: value });
   }
 
+  function handlePhotoLoaded(dataUrl: string, nativeW: number, nativeH: number) {
+    // Clear any existing annotations when a new photo is uploaded
+    setSpacePhoto({ dataUrl, nativeW, nativeH });
+    setParams({ ...params, annotations: { strokes: [], placementLine: null } });
+  }
+
+  function handleRemovePhoto() {
+    setSpacePhoto(null);
+    setParams({ ...params, annotations: { strokes: [], placementLine: null } });
+  }
+
   function handleGenerate() {
     const result = buildAllPrompts(params);
     setPrompts(result);
-    // On mobile, scroll to output
     if (window.innerWidth < 768) {
       setTimeout(() => outputRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     }
   }
 
   function handleReset() {
-    setParams({ ...params, selectedAngles: [], freeNote: '' });
+    setParams({ ...params, selectedAngles: [], freeNote: '', annotations: { strokes: [], placementLine: null } });
     setPrompts(null);
+    setSpacePhoto(null);
   }
 
   const canGenerate = params.selectedAngles.length === 4;
@@ -70,8 +94,41 @@ export default function App() {
 
       {/* Two-panel layout */}
       <div className="max-w-7xl mx-auto px-4 py-6 md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-8 md:items-start">
-        {/* LEFT: Parameter form */}
+
+        {/* LEFT: Photo upload → annotation canvas → parameter form */}
         <div className="flex flex-col gap-6">
+
+          {/* Photo upload section */}
+          {!spacePhoto ? (
+            <PhotoUpload onPhotoLoaded={handlePhotoLoaded} />
+          ) : (
+            <div className="flex flex-col gap-2">
+              {/* Header row with photo name + remove button */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400">Space photo</h3>
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                >
+                  Remove photo
+                </button>
+              </div>
+
+              {/* Image annotation canvas */}
+              <ImageAnnotator
+                photoDataUrl={spacePhoto.dataUrl}
+                nativeW={spacePhoto.nativeW}
+                nativeH={spacePhoto.nativeH}
+                annotations={params.annotations}
+                onChange={(a) => updateParam('annotations', a)}
+              />
+            </div>
+          )}
+
+          <div className="h-px bg-slate-800" />
+
+          {/* Parameter form */}
           <ObjectTypeSelector value={params.objectType} onChange={(v) => updateParam('objectType', v)} />
           <ObjectSizeSelector value={params.objectSize} onChange={(v) => updateParam('objectSize', v)} />
           <PlacementSelector value={params.placement} onChange={(v) => updateParam('placement', v)} />
