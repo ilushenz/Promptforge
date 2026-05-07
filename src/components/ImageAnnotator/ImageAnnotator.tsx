@@ -53,7 +53,7 @@ function redrawBrushCanvas(
       offCtx.strokeStyle = 'rgba(0,0,0,1)';
     } else {
       offCtx.globalCompositeOperation = 'source-over';
-      offCtx.strokeStyle = 'rgb(59,130,246)';
+      offCtx.strokeStyle = 'rgb(239,68,68)';
     }
 
     offCtx.beginPath();
@@ -324,7 +324,7 @@ export function ImageAnnotator({ photoDataUrl, nativeW, nativeH, annotations, on
             bCtx.strokeStyle = 'rgba(0,0,0,1)';
           } else {
             bCtx.globalCompositeOperation = 'source-over';
-            bCtx.strokeStyle = 'rgb(59,130,246)';
+            bCtx.strokeStyle = 'rgb(239,68,68)';
           }
           bCtx.beginPath();
           bCtx.moveTo(stroke.points[0].x * nativeW, stroke.points[0].y * nativeH);
@@ -355,16 +355,6 @@ export function ImageAnnotator({ photoDataUrl, nativeW, nativeH, annotations, on
       ctx.moveTo(sx, sy);
       ctx.lineTo(ex, ey);
       ctx.stroke();
-      const hr = HANDLE_RADIUS * (nativeW / 600);
-      for (const [px, py] of [[sx, sy], [ex, ey]] as [number, number][]) {
-        ctx.beginPath();
-        ctx.arc(px, py, hr, 0, Math.PI * 2);
-        ctx.fillStyle = '#ef4444';
-        ctx.fill();
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = Math.max(2, nativeW / 800);
-        ctx.stroke();
-      }
       ctx.restore();
     }
 
